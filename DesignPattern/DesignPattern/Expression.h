@@ -101,6 +101,21 @@ public:
 		cout << "~MulExpression()" << endl;
 	}
 };
+//除法解释器
+class DivExpression : public SymbolExpression {
+public:
+	DivExpression(Expression * left, Expression * right) :
+		SymbolExpression(left, right) {
+
+	}
+	//把左右两个表达式运算的结果相除
+	virtual int interpreter(map<string, int>& var) {
+		return left->interpreter(var) / right->interpreter(var);
+	}
+	~DivExpression() {
+		cout << "~DivExpression()" << endl;
+	}
+};
 
 //解析器封装类
 //根据迪米特法则进行封装，目的是让Client至于直接朋友打交道，相当于Facade
@@ -221,6 +236,16 @@ public:
 				//将左右操作数相乘，并把结果放入栈中
 				expStk.push(new MulExpression(left, right));
 				break;
+			case '/':
+				//从栈中取出右操作数
+				right = expStk.top();
+				expStk.pop();
+				//从栈中取出左操作数
+				left = expStk.top();
+				expStk.pop();
+				//将左右操作数相除，并把结果放入栈中
+				expStk.push(new DivExpression(left, right));
+				break;
 			default:
 				//如果是变量（终结符，如a+b+c中的a、b或c）
 				//则直接生成对应的变量解析器对象
@@ -282,6 +307,14 @@ public:
 		string expStr1 = "ab+c*c-";
 		Calculator cal1(expStr1, 1);
 		cout << "运算结果为：" << expStr1.c_str() << "=" << cal1.run(var) << endl;
+
+
+		//(a+b)*c-(a+b)/e
+		string expStr2 = "ab+c*ab+e/-";
+		var["d"] = 100;
+		var["e"] = 20;
+		Calculator cal2(expStr2, 1);
+		cout << "运算结果为：" << expStr2.c_str() << "=" << cal2.run(var) << endl;
 	}
 };
 
