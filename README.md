@@ -7,4 +7,4 @@ Design Pattern: Including various kinds of data structure, pointer or design pat
 
 2. Private creator to fobid stack object.
 
-3. Interpretor pattern.
+3. Interpretor pattern, and a robot control interpretor base on this pattern.

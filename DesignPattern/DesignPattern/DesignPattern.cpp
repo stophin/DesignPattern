@@ -34,6 +34,12 @@ void testExpression() {
 	Calculator::test();
 }
 
+#include "RobotControl.h"
+
+void testRobotControl() {
+	InstructionHandler::test();
+}
+
 int main(int argc, char* argv[])
 {
 	testSharedPtr();
@@ -41,6 +47,8 @@ int main(int argc, char* argv[])
 	testPrivateCreator();
 
 	testExpression();
+
+	testRobotControl();
 
 	getch();
 
