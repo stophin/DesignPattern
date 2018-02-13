@@ -4,12 +4,6 @@
 
 #include "DesignPattern.h"
 
-#include <map>
-#include <stack>
-#include <typeinfo>
-#include <iostream>
-using namespace std;
-
 //解释器模式
 //抽象表达式类
 class Expression {
@@ -290,8 +284,8 @@ public:
 	}
 
 	static void test() {
-		//保证是合法表达式，且已经按照运算规则进行排序
-		//这里是(a+b)*c的规则排序后的表达式
+		//保证是合法表达式
+		//使用中缀逆波兰式
 		string expStr = "a+b-c";
 
 		map<string, int> var;//相当于Interpreter模式中的Context
@@ -303,7 +297,7 @@ public:
 
 		cout << "运算结果为：" << expStr.c_str() << "=" << cal.run(var) << endl;
 
-		//也可以是逆波兰式
+		//也可以是后缀逆波兰式
 		string expStr1 = "ab+c*c-";
 		Calculator cal1(expStr1, 1);
 		cout << "运算结果为：" << expStr1.c_str() << "=" << cal1.run(var) << endl;
@@ -315,6 +309,21 @@ public:
 		var["e"] = 20;
 		Calculator cal2(expStr2, 1);
 		cout << "运算结果为：" << expStr2.c_str() << "=" << cal2.run(var) << endl;
+
+		//a - b * c
+		string expStr3 = "abc*-";
+		Calculator cal3(expStr3, 1);
+		cout << "运算结果为：" << expStr3.c_str() << "=" << cal3.run(var) << endl;
+
+		//(a - b) * c
+		string expStr4 = "ab-c*";
+		Calculator cal4(expStr4, 1);
+		cout << "运算结果为：" << expStr4.c_str() << "=" << cal4.run(var) << endl;
+
+		// a + b * (c - d) / e
+		string expStr5 = "abcd-*e/+";
+		Calculator cal5(expStr5, 1);
+		cout << "运算结果为：" << expStr5.c_str() << "=" << cal5.run(var) << endl;
 	}
 };
 

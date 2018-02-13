@@ -40,6 +40,13 @@ void testRobotControl() {
 	InstructionHandler::test();
 }
 
+#include "PolishNotation.h"
+
+void testPolishNotation() {
+	char buf[100];
+	toPolishNotation("3+2-5", buf);
+}
+
 int main(int argc, char* argv[])
 {
 	testSharedPtr();
@@ -49,6 +56,8 @@ int main(int argc, char* argv[])
 	testExpression();
 
 	testRobotControl();
+
+	testPolishNotation();
 
 	getch();
 

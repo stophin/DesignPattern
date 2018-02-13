@@ -80,10 +80,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DesignPattern.cpp" />
+    <ClCompile Include="PolishNotation.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DesignPattern.h" />
     <ClInclude Include="Expression.h" />
+    <ClInclude Include="PolishNotation.h" />
     <ClInclude Include="PrivateCreator.h" />
     <ClInclude Include="RobotControl.h" />
     <ClInclude Include="SharedPtr.h" />

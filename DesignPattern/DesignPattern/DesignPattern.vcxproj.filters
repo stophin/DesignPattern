@@ -21,6 +21,9 @@
     <ClCompile Include="DesignPattern.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="PolishNotation.cpp">
+      <Filter>头文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SharedPtr.h">
@@ -36,6 +39,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="RobotControl.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="PolishNotation.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
