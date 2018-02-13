@@ -83,6 +83,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DesignPattern.h" />
+    <ClInclude Include="Expression.h" />
     <ClInclude Include="PrivateCreator.h" />
     <ClInclude Include="SharedPtr.h" />
   </ItemGroup>

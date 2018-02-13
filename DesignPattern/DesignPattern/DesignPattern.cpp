@@ -28,11 +28,19 @@ void testPrivateCreator() {
 	demo->Release();
 }
 
+#include "Expression.h"
+
+void testExpression() {
+	Calculator::test();
+}
+
 int main(int argc, char* argv[])
 {
 	testSharedPtr();
 
 	testPrivateCreator();
+
+	testExpression();
 
 	getch();
 
