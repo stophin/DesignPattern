@@ -4,6 +4,8 @@
 
 #include "DesignPattern.h"
 
+//#define DEBUG_DECONSTRUCTOR
+
 //解释器模式
 //抽象表达式类
 class Expression {
@@ -26,7 +28,9 @@ public:
 		return var[key];
 	}
 	~VarExpression() {
+#ifdef DEBUG_DECONSTRUCTOR
 		cout << "~VarExpression()" << endl;
+#endif
 	}
 };
 
@@ -61,7 +65,9 @@ public:
 		return left->interpreter(var) + right->interpreter(var);
 	}
 	~AddExpression() {
+#ifdef DEBUG_DECONSTRUCTOR
 		cout << "~AddExpression()" << endl;
+#endif
 	}
 };
 
@@ -77,7 +83,9 @@ public:
 		return left->interpreter(var) - right->interpreter(var);
 	}
 	~SubExpression() {
+#ifdef DEBUG_DECONSTRUCTOR
 		cout << "~SubExpression()" << endl;
+#endif
 	}
 };
 //乘法解释器
@@ -92,7 +100,9 @@ public:
 		return left->interpreter(var) * right->interpreter(var);
 	}
 	~MulExpression() {
+#ifdef DEBUG_DECONSTRUCTOR
 		cout << "~MulExpression()" << endl;
+#endif
 	}
 };
 //除法解释器
@@ -107,7 +117,9 @@ public:
 		return left->interpreter(var) / right->interpreter(var);
 	}
 	~DivExpression() {
+#ifdef DEBUG_DECONSTRUCTOR
 		cout << "~DivExpression()" << endl;
+#endif
 	}
 };
 
@@ -118,138 +130,139 @@ private :
 	Expression * expression;
 public:
 	//解析构造语法树
-	Calculator(string expStr) {
+	Calculator(string expStr, int type = 0) {
 		expression = NULL;
 
-		//栈，用来暂存中间结果
-		stack<Expression*> expStk;
+		//中缀表达式
+		if (0 == type) {
 
-		Expression * left = NULL;
-		Expression * right = NULL;
+			//栈，用来暂存中间结果
+			stack<Expression*> expStk;
 
-		//从左到右分析表达式（如a+b-c)，构造如下语法树
-		/*
-		 *           -
-         *         /   \
-         *       +     c
-         *     /   \
-         *    a     b
-        */
-		unsigned int len = expStr.length();
-		for (unsigned int i = 0; i < len; i++) {
-			switch (expStr[i]) {
-			case '+':
-				//从栈中取出左操作数
-				left = expStk.top();
+			Expression * left = NULL;
+			Expression * right = NULL;
+
+			//从左到右分析表达式（如a+b-c)，构造如下语法树
+			/*
+			*           -
+			*         /   \
+			*       +     c
+			*     /   \
+			*    a     b
+			*/
+			unsigned int len = expStr.length();
+			for (unsigned int i = 0; i < len; i++) {
+				switch (expStr[i]) {
+				case '+':
+					//从栈中取出左操作数
+					left = expStk.top();
+					expStk.pop();
+					//从表达式中取出+号后面的右操作数，并生成终结符解析对象
+					right = new VarExpression(expStr.substr(++i, 1));
+					//将左右操作数相加，并把结果放入栈中
+					expStk.push(new AddExpression(left, right));
+					break;
+				case '-':
+					//从栈中取出左操作数
+					left = expStk.top();
+					expStk.pop();
+					//从表达式中取出-号后面的右操作数，并生成终结符解析对象
+					right = new VarExpression(expStr.substr(++i, 1));
+					//将左右操作数相减，并把结果放入栈中
+					expStk.push(new SubExpression(left, right));
+					break;
+				case '*':
+					//从栈中取出左操作数
+					left = expStk.top();
+					expStk.pop();
+					//从表达式中取出-号后面的右操作数，并生成终结符解析对象
+					right = new VarExpression(expStr.substr(++i, 1));
+					//将左右操作数相乘，并把结果放入栈中
+					expStk.push(new MulExpression(left, right));
+					break;
+				default:
+					//如果是变量（终结符，如a+b+c中的a、b或c）
+					//则直接生成对应的变量解析器对象
+					expStk.push(new VarExpression(expStr.substr(i, 1)));
+				}
+			}
+			//栈中保存的就是最终语法树的根节点
+			if (!expStk.empty()) {
+				expression = expStk.top();
 				expStk.pop();
-				//从表达式中取出+号后面的右操作数，并生成终结符解析对象
-				right = new VarExpression(expStr.substr(++i, 1));
-				//将左右操作数相加，并把结果放入栈中
-				expStk.push(new AddExpression(left, right));
-				break;
-			case '-':
-				//从栈中取出左操作数
-				left = expStk.top();
-				expStk.pop();
-				//从表达式中取出-号后面的右操作数，并生成终结符解析对象
-				right = new VarExpression(expStr.substr(++i, 1));
-				//将左右操作数相减，并把结果放入栈中
-				expStk.push(new SubExpression(left, right));
-				break;
-			case '*':
-				//从栈中取出左操作数
-				left = expStk.top();
-				expStk.pop();
-				//从表达式中取出-号后面的右操作数，并生成终结符解析对象
-				right = new VarExpression(expStr.substr(++i, 1));
-				//将左右操作数相乘，并把结果放入栈中
-				expStk.push(new MulExpression(left, right));
-				break;
-			default:
-				//如果是变量（终结符，如a+b+c中的a、b或c）
-				//则直接生成对应的变量解析器对象
-				expStk.push(new VarExpression(expStr.substr(i, 1)));
 			}
 		}
-		//栈中保存的就是最终语法树的根节点
-		if (!expStk.empty()) {
-			expression = expStk.top();
-			expStk.pop();
-		}
-	}
+		//后缀逆波兰式
+		else if (1 == type) {
 
+			//栈，用来暂存中间结果
+			stack<Expression*> expStk;
 
-	//解析构造语法树
-	Calculator(string expStr, int type) {
-		expression = NULL;
+			Expression * left = NULL;
+			Expression * right = NULL;
 
-		//栈，用来暂存中间结果
-		stack<Expression*> expStk;
-
-		Expression * left = NULL;
-		Expression * right = NULL;
-
-		//分析逆波兰式（ab+c*)，构造如下语法树
-		/*
-		*           -
-		*         /   \
-		*       +     c
-		*     /   \
-		*    a     b
-		*/
-		unsigned int len = expStr.length();
-		for (unsigned int i = 0; i < len; i++) {
-			switch (expStr[i]) {
-			case '+':
-				//从栈中取出右操作数
-				right = expStk.top();
-				expStk.pop();
-				//从栈中取出左操作数
-				left = expStk.top();
-				expStk.pop();
-				//将左右操作数相加，并把结果放入栈中
-				expStk.push(new AddExpression(left, right));
-				break;
-			case '-':
-				//从栈中取出右操作数
-				right = expStk.top();
-				expStk.pop();
-				//从栈中取出左操作数
-				left = expStk.top();
-				expStk.pop();
-				//将左右操作数相减，并把结果放入栈中
-				expStk.push(new SubExpression(left, right));
-				break;
-			case '*':
-				//从栈中取出右操作数
-				right = expStk.top();
-				expStk.pop();
-				//从栈中取出左操作数
-				left = expStk.top();
-				expStk.pop();
-				//将左右操作数相乘，并把结果放入栈中
-				expStk.push(new MulExpression(left, right));
-				break;
-			case '/':
-				//从栈中取出右操作数
-				right = expStk.top();
-				expStk.pop();
-				//从栈中取出左操作数
-				left = expStk.top();
-				expStk.pop();
-				//将左右操作数相除，并把结果放入栈中
-				expStk.push(new DivExpression(left, right));
-				break;
-			default:
-				//如果是变量（终结符，如a+b+c中的a、b或c）
-				//则直接生成对应的变量解析器对象
-				expStk.push(new VarExpression(expStr.substr(i, 1)));
+			//分析逆波兰式（ab+c*)，构造如下语法树
+			/*
+			*           -
+			*         /   \
+			*       +     c
+			*     /   \
+			*    a     b
+			*/
+			unsigned int len = expStr.length();
+			for (unsigned int i = 0; i < len; i++) {
+				switch (expStr[i]) {
+				case '+':
+					//从栈中取出右操作数
+					right = expStk.top();
+					expStk.pop();
+					//从栈中取出左操作数
+					left = expStk.top();
+					expStk.pop();
+					//将左右操作数相加，并把结果放入栈中
+					expStk.push(new AddExpression(left, right));
+					break;
+				case '-':
+					//从栈中取出右操作数
+					right = expStk.top();
+					expStk.pop();
+					//从栈中取出左操作数
+					left = expStk.top();
+					expStk.pop();
+					//将左右操作数相减，并把结果放入栈中
+					expStk.push(new SubExpression(left, right));
+					break;
+				case '*':
+					//从栈中取出右操作数
+					right = expStk.top();
+					expStk.pop();
+					//从栈中取出左操作数
+					left = expStk.top();
+					expStk.pop();
+					//将左右操作数相乘，并把结果放入栈中
+					expStk.push(new MulExpression(left, right));
+					break;
+				case '/':
+					//从栈中取出右操作数
+					right = expStk.top();
+					expStk.pop();
+					//从栈中取出左操作数
+					left = expStk.top();
+					expStk.pop();
+					//将左右操作数相除，并把结果放入栈中
+					expStk.push(new DivExpression(left, right));
+					break;
+				default:
+					//如果是变量（终结符，如a+b+c中的a、b或c）
+					//则直接生成对应的变量解析器对象
+					expStk.push(new VarExpression(expStr.substr(i, 1)));
+				}
 			}
-		}
-		//栈中保存的就是最终语法树的根节点
-		if (!expStk.empty()) {
-			expression = expStk.top();
-			expStk.pop();
+			//栈中保存的就是最终语法树的根节点
+			if (!expStk.empty()) {
+				expression = expStk.top();
+				expStk.pop();
+			}
 		}
 	}
 
@@ -275,7 +288,10 @@ public:
 	~Calculator() {
 		delTree(expression);
 		expression = NULL;
+
+#ifdef DEBUG_DECONSTRUCTOR
 		cout << "~Calculator()" << endl;
+#endif
 	}
 
 	//开始运算
