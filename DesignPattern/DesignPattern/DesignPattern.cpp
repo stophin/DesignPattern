@@ -27,13 +27,6 @@ void testPrivateCreator() {
 
 	demo->Release();
 }
-
-#include "Expression.h"
-
-void testExpression() {
-	Calculator::test();
-}
-
 #include "RobotControl.h"
 
 void testRobotControl() {
@@ -43,8 +36,100 @@ void testRobotControl() {
 #include "PolishNotation.h"
 
 void testPolishNotation() {
+	const char * exp = "3+(2-5)";
+
 	char buf[100];
-	toPolishNotation("3+2-5", buf);
+
+	char * result;
+	result = toPolishNotation(exp, buf);
+	printf("波兰式：\t%s\n", result);
+
+	result = toReversePolishNotation(exp, buf);
+	printf("逆波兰式：\t%s\n", result);
+}
+
+#include "Expression.h"
+
+void testExpression() {
+	Calculator::test();
+
+	map<string, int> var;
+	var["a"] = 100;
+	var["b"] = 20;
+	var["c"] = 40;
+	var["d"] = 100;
+	var["e"] = 20;
+
+	{
+		//a+b*c-c
+		const char * exp = "a+b*c-c";
+		printf("计算式：\t%s\n", exp);
+		//使用逆波兰式生成，并用expression计算
+		char buff[100];
+		char * result;
+		result = toReversePolishNotation(exp, buff);
+		printf("逆波兰式：\t%s\n", result);
+		//计算逆波兰式
+		string expStr(result);
+		Calculator cal(expStr, 1);
+		cout << "运算结果为：\t" << expStr.c_str() << "=" << cal.run(var) << endl;
+	}
+	{
+		//(a+b)*c-(a+b)/e
+		const char * exp = "(a+b)*c-(a+b)/e";
+		printf("计算式：\t%s\n", exp);
+		//使用逆波兰式生成，并用expression计算
+		char buff[100];
+		char * result;
+		result = toReversePolishNotation(exp, buff);
+		printf("逆波兰式：\t%s\n", result);
+		//计算逆波兰式
+		string expStr(result);
+		Calculator cal(expStr, 1);
+		cout << "运算结果为：\t" << expStr.c_str() << "=" << cal.run(var) << endl;
+	}
+	{
+		//a - b * c
+		const char * exp = "a - b * c";
+		printf("计算式：\t%s\n", exp);
+		//使用逆波兰式生成，并用expression计算
+		char buff[100];
+		char * result;
+		result = toReversePolishNotation(exp, buff);
+		printf("逆波兰式：\t%s\n", result);
+		//计算逆波兰式
+		string expStr(result);
+		Calculator cal(expStr, 1);
+		cout << "运算结果为：\t" << expStr.c_str() << "=" << cal.run(var) << endl;
+	}
+	{
+		//(a - b) * c
+		const char * exp = "(a - b) * c";
+		printf("计算式：\t%s\n", exp);
+		//使用逆波兰式生成，并用expression计算
+		char buff[100];
+		char * result;
+		result = toReversePolishNotation(exp, buff);
+		printf("逆波兰式：\t%s\n", result);
+		//计算逆波兰式
+		string expStr(result);
+		Calculator cal(expStr, 1);
+		cout << "运算结果为：\t" << expStr.c_str() << "=" << cal.run(var) << endl;
+	}
+	{
+		//a + b * (c - d) / e
+		const char * exp = "a + b * (c - d) / e";
+		printf("计算式：\t%s\n", exp);
+		//使用逆波兰式生成，并用expression计算
+		char buff[100];
+		char * result;
+		result = toReversePolishNotation(exp, buff);
+		printf("逆波兰式：\t%s\n", result);
+		//计算逆波兰式
+		string expStr(result);
+		Calculator cal(expStr, 1);
+		cout << "运算结果为：\t" << expStr.c_str() << "=" << cal.run(var) << endl;
+	}
 }
 
 int main(int argc, char* argv[])
@@ -53,11 +138,10 @@ int main(int argc, char* argv[])
 
 	testPrivateCreator();
 
-	testExpression();
-
 	testRobotControl();
 
 	testPolishNotation();
+	testExpression();
 
 	getch();
 

@@ -3,106 +3,209 @@
 #include "PolishNotation.h"
 
 
-string analyData(const char * str, int &i) {
-	int temp = i++;
-	while (str[i] && str[i] >= 0 && str[i] <= '9') {
-		i++;
+/*
+*  判断字符op是否是运算数
+*/
+bool isValue(char op)
+{
+	//如果该字符为数字或字符，解析并压入栈
+	if (op >= '0' && op <= '9') {
+		return true;
 	}
-	string s(str + temp, str + i);
-	return s;
-}
-string analyStr(const char * str, int &i) {
-	int temp = i++;
-	while (str[i] && ((str[i] >= 'a' && str[i] <= 'z') ||
-		(str[i] >= 'A' && str[i] <= 'Z'))) {
-		i++;
+	else if ((op >= 'a' && op <= 'z') ||
+		(op >= 'A' && op <= 'Z')) {
+		return true;
 	}
-	string s(str + temp, str + i);
-	return s;
+	return false;
 }
 
-void toPolishNotation(const char * str, char * post_str) {
-	//存放运算符表达式的栈
-	stack<char> oper_stk;
-	vector<string> post_vec;
-	string data;
 
-	//将中缀表达式转换为后缀表达式
-	int i;
-	for (i = 0; str[i]; i++) {
-		//如果该字符为数字或字符，解析并压入栈
-		if (str[i] >= '0' && str[i] <= '9') {
-			data = analyData(str, i);
-			post_vec.push_back(data);
-			i--;
-		}
-		else if ((str[i] >= 'a' && str[i] <= 'z') ||
-			(str[i] >= 'A' && str[i] <= 'Z')) {
-			data = analyStr(str, i);
-			post_vec.push_back(data);
-			i--;
-		}
-		else if (str[i] == '(') {
-			oper_stk.push(str[i]);
-		}
-		else if (str[i] == ')') {
-			char ch_temp[2] = { 0 };
-			ch_temp[0] = oper_stk.top();
-			while (ch_temp[0] != '(') {
-				string str_temp(ch_temp);
-				post_vec.push_back(str_temp);
-				oper_stk.pop();
+/*
+*  判断字符op是否是运算符
+*/
+bool isOperator(char op)
+{
+	return (op == '+') || (op == '-') || (op == '*') || (op == '/');
+}
 
-				ch_temp[0] = oper_stk.top();
-			}
-			oper_stk.pop();
+/*
+*  获取运算符的优先级
+*  +或- ： 2
+*  *或/ ： 3
+*  其它 ： 1
+*/
+int getPriority(char op)
+{
+	switch (op) {
+	case '+':
+	case '-':
+		return 2;
+	case '*':
+	case '/':
+		return 3;
+	default:
+		return 1;
+	}
+}
+
+/*
+*  反转一个字符串，在转换为后缀表达式时用到
+*/
+void reverseStr(char *str)
+{
+	int i = 0;
+	int j = strlen(str) - 1;
+	char temp;
+	while (i<j) {
+		temp = str[i];
+		str[i] = str[j];
+		str[j] = temp;
+		i++;
+		j--;
+	}
+}
+
+class MyStack : public stack<char> {
+public:
+	MyStack(int l, int t) {
+
+	}
+
+	bool getTopElement(char& e) {
+		if (empty()) {
+			return false;
 		}
-		else if (str[i] == '+' || str[i] == '-') {
-			char ch_temp[2] = { 0 };
-			//全部出栈，直到碰到"("
-			while (oper_stk.size() != 0) {
-				ch_temp[0] = oper_stk.top();
-				if (ch_temp[0] == '(') {
+		else {
+			e = stack<char>::top();
+			return true;
+		}
+	}
+
+	bool pop(char& e) {
+		if (empty()) {
+			return false;
+		}
+		else {
+			e = stack<char>::top();
+			stack<char>::pop();
+			return true;
+		}
+	}
+};
+
+/*
+*  函数功能：将中缀表达式转换为后缀表达式
+*  参数： expression: 待转换的中缀表达式
+*  返回值： 已经转换好的后缀表达式
+*/
+char * toReversePolishNotation(const char * expression, char * result)
+{
+	if (expression == NULL) {
+		return NULL;
+	}
+	if (result == NULL) {
+		return NULL;
+	}
+	int length = strlen(expression);
+	MyStack opStack(length, 0);
+	MyStack tempStack(length, 0);
+	//char * result = (char *)malloc(sizeof(char)* (length + 1));
+	const char * pstr = expression;
+	char e, topE;
+	int i = 0;
+
+	while (*pstr) {
+		if (isValue(*pstr)) {
+			tempStack.push(*pstr);
+		}
+		else if (isOperator(*pstr)) {
+			while (opStack.getTopElement(topE)) {
+				if ((topE == '(') || (getPriority(*pstr)>getPriority(topE)))
 					break;
-				}
-				oper_stk.pop();
-
-				string str_temp(ch_temp);
-				post_vec.push_back(str_temp);
+				opStack.pop(e);
+				tempStack.push(e);
 			}
-			//当前表达式符号入栈
-			oper_stk.push(str[i]);
+			opStack.push(*pstr);
 		}
-		else if (str[i] == '*' || str[i] == '/') {
-			char ch_temp[2] = { 0 };
-			//全部出栈，直到碰到"(""+""-"
-			while (oper_stk.size() != 0) {
-				ch_temp[0] = oper_stk.top();
-				if (ch_temp[0] == '(' ||
-					ch_temp[0] == '+' ||
-					ch_temp[0] == '-') {
+		else if (*pstr == '(') {
+			opStack.push(*pstr);
+		}
+		else if (*pstr == ')') {
+			while (opStack.pop(e)) {
+				if (e == '(')
 					break;
-				}
-				oper_stk.pop();
-
-				string str_temp(ch_temp);
-				post_vec.push_back(str_temp);
+				tempStack.push(e);
 			}
-			//当前表达式符号入栈
-			oper_stk.push(str[i]);
 		}
+		pstr++;
+	}
+	while (opStack.pop(e)) {
+		tempStack.push(e);
 	}
 
-	while (!oper_stk.empty()) {
-		char ch_temp[2] = { 0 };
-		ch_temp[0] = oper_stk.top();
-		oper_stk.pop();
+	while (tempStack.pop(e)) {
+		result[i] = e;
+		i++;
+	}
+	result[i] = '\0';
+	reverseStr(result);
 
-		string str_temp(ch_temp);
-		post_vec.push_back(str_temp);
+	return result;
+
+}
+
+/*
+*  函数功能： 将中缀表达式转换为前缀表达式
+*  参数： expression: 待转换的中缀表达式
+*  返回值： 已经转换好的前缀表达式
+*/
+char * toPolishNotation(const char * expression, char * result)
+{
+	if (expression == NULL)
+		return NULL;
+	int length = strlen(expression);
+	MyStack opStack(length, 0);
+	MyStack tempStack(length, 0);
+	//char * result = (char *)malloc((length + 1) * sizeof(char));
+	char e, topE;
+	int i = 0;
+	int index = length - 1;
+
+	while (index >= 0) {
+		if (isValue(expression[index])) {
+			tempStack.push(expression[index]);
+		}
+		else if (isOperator(expression[index])) {
+			while (opStack.getTopElement(topE)) {
+				if ((topE == ')') || (getPriority(expression[index]) >= getPriority(topE)))
+					break;
+				opStack.pop(e);
+				tempStack.push(e);
+			}
+			opStack.push(expression[index]);
+		}
+		else if (expression[index] == ')') {
+			opStack.push(expression[index]);
+		}
+		else if (expression[index] == '(') {
+			while (opStack.pop(e)) {
+				if (e == ')')
+					break;
+				tempStack.push(e);
+			}
+		}
+		index--;
 	}
 
-	for (vector<string>::iterator it = post_vec.begin(); it != post_vec.end(); it++){
-		printf("%s", it->c_str());
+	while (opStack.pop(e)) {
+		tempStack.push(e);
 	}
+
+	while (tempStack.pop(e)) {
+		result[i] = e;
+		i++;
+	}
+	result[i] = '\0';
+
+	return result;
 }

@@ -285,7 +285,15 @@ public:
 
 	static void test() {
 		//保证是合法表达式
-		//使用中缀逆波兰式
+		
+		/*
+		注：
+		中缀表达式也就是人类经常使用的表达式，一般使用括号和运算符号来表达运算顺序
+		前缀表达式，也叫波兰式，表达式一般为“操作符,操作数1，操作数2”
+		后缀表达式，也叫逆波兰式，表达式一般为“操作数1，操作数2，操作符”
+		*/
+
+		//使用中缀表达式
 		string expStr = "a+b-c";
 
 		map<string, int> var;//相当于Interpreter模式中的Context
@@ -297,12 +305,18 @@ public:
 
 		cout << "运算结果为：" << expStr.c_str() << "=" << cal.run(var) << endl;
 
+		//但是对于中缀表达式不能处理运算顺序
+		string expStr_1 = "a+b*c";
+		Calculator cal_1(expStr_1);
+		cout << "运算结果为：（错误的结果）" << expStr_1.c_str() << "=" << cal_1.run(var) << endl;
+
 		//也可以是后缀逆波兰式
+		//a+b*c-c
 		string expStr1 = "ab+c*c-";
 		Calculator cal1(expStr1, 1);
 		cout << "运算结果为：" << expStr1.c_str() << "=" << cal1.run(var) << endl;
 
-
+		//后缀逆波兰式可以很好地解决运算顺序问题
 		//(a+b)*c-(a+b)/e
 		string expStr2 = "ab+c*ab+e/-";
 		var["d"] = 100;
