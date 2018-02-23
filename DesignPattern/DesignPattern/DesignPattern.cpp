@@ -132,6 +132,22 @@ void testExpression() {
 	}
 }
 
+#include "TemplateCast.h"
+
+void testTemplateCast() {
+	Template_Cast::test();
+
+	Template_Loop::test();
+}
+
+#include "AutoPtr.h"
+
+void testAutoPtr() {
+	Auto_Ptr::test();
+}
+
+
+
 int main(int argc, char* argv[])
 {
 	testSharedPtr();
@@ -142,6 +158,10 @@ int main(int argc, char* argv[])
 
 	testPolishNotation();
 	testExpression();
+
+	testTemplateCast();
+
+	testAutoPtr();
 
 	getch();
 

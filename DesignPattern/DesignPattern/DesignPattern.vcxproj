@@ -83,12 +83,14 @@
     <ClCompile Include="PolishNotation.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AutoPtr.h" />
     <ClInclude Include="DesignPattern.h" />
     <ClInclude Include="Expression.h" />
     <ClInclude Include="PolishNotation.h" />
     <ClInclude Include="PrivateCreator.h" />
     <ClInclude Include="RobotControl.h" />
     <ClInclude Include="SharedPtr.h" />
+    <ClInclude Include="TemplateCast.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

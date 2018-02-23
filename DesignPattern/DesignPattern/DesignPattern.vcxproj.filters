@@ -44,5 +44,11 @@
     <ClInclude Include="PolishNotation.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="TemplateCast.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="AutoPtr.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
