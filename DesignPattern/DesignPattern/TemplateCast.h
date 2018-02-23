@@ -43,7 +43,7 @@ namespace Template_Cast {
 }
 
 //怪异的循环模板模式
-//这个不太清除，不用了解
+//这个不太清楚，不用了解
 namespace Template_Loop {
 	class NewHandlerHolder
 	{
