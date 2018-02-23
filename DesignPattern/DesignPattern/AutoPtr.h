@@ -64,10 +64,14 @@ namespace Auto_Ptr {
 
 		printf("%d\n", *mInt);
 
-		struct test_s {
+		class test_s {
+		public:
 			int a;
 			int b;
 			float c;
+			void print() {
+				printf("%d\t%d\t%f\n", a, b, c);
+			}
 		};
 
 		auto_ptr<test_s> mS(new test_s());
@@ -85,7 +89,7 @@ namespace Auto_Ptr {
 		//注意这一步以后_mS不能用了
 		auto_ptr<test_s> __mS;
 		__mS = _mS;
-		printf("%d\t%d\t%f\n", __mS->a, __mS->b, __mS->c);
+		__mS->print();
 
 	}
 }
