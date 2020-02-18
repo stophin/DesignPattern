@@ -7,14 +7,14 @@
 
 
 void testSharedPtr() {
-	shared_ptr<int> val(new int(100));
+	DP::shared_ptr<int> val(new int(100));
 	printf("val=%d\n", *val);
 
-	shared_ptr<int> temp(val);
+	DP::shared_ptr<int> temp(val);
 	*temp = 300;
 	printf("val=%d\n", *val);
 
-	val = shared_ptr<int>(new int(200));
+	val = DP::shared_ptr<int>(new int(200));
 	printf("val=%d\n", *val);
 }
 
@@ -147,9 +147,15 @@ void testAutoPtr() {
 }
 
 
+#include "Factory.h"
 
 int main(int argc, char* argv[])
 {
+	factoryTest();
+	factoryTestFactory();
+	factoryTestFactorySharedPtr();
+
+
 	testSharedPtr();
 
 	testPrivateCreator();
