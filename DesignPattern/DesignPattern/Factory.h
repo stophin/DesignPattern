@@ -171,6 +171,63 @@ public:
 };
 //////////////////////////////////
 
+
+//////////////////////////////////
+//策略模式
+class RoleContext {
+public:
+	RoleContext(RoleOperation * operation) : m_pOperation(operation) {
+
+	}
+
+	~RoleContext() {
+		if (m_pOperation) {
+			delete m_pOperation;
+		}
+	}
+
+	std::string execute() {
+		return m_pOperation->Op();
+	}
+private:    
+	// 禁止外部拷贝和赋值操作
+	RoleContext(const RoleContext &);
+	const RoleContext &operator=(const RoleContext &);
+
+	RoleOperation *m_pOperation;
+
+};
+//////////////////////////////////
+//////////////////////////////////
+//万能（模板）策略模式
+template <class ProductType_t>
+class ProductContextTemplate {
+public:
+	ProductContextTemplate(ProductType_t *operation)
+		: m_pOperation(operation) {
+	}
+
+	~ProductContextTemplate() {
+		if (m_pOperation) {
+			delete m_pOperation;
+		}
+	}
+
+	std::string execute() {
+		return m_pOperation->Op();
+	}
+
+private:
+	// 禁止外部拷贝和赋值操作
+	ProductContextTemplate(const ProductContextTemplate &);
+	const ProductContextTemplate &operator=(const ProductContextTemplate &);
+
+	ProductType_t* m_pOperation;
+};
+//////////////////////////////////
+
 void factoryTest();
 void factoryTestFactory();
 void factoryTestFactorySharedPtr();
+void facotryTestContext();
+void factoryTestContextTemplate();

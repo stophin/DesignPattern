@@ -154,6 +154,8 @@ int main(int argc, char* argv[])
 	factoryTest();
 	factoryTestFactory();
 	factoryTestFactorySharedPtr();
+	facotryTestContext();
+	factoryTestContextTemplate();
 
 
 	testSharedPtr();

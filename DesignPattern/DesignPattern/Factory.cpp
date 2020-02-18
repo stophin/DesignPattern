@@ -23,6 +23,8 @@ public:
 	}
 };
 void factoryTest() {
+	std::cout << "factoryTest" << std::endl;
+
 	InitializeRole(); // 优先初始化所有角色到工厂
 
 	JudgeRole judgeRole;
@@ -33,6 +35,7 @@ void factoryTest() {
 }
 
 //////////////////////////////////
+//万能工厂测试
 void InitializeRoleFactory() // 初始化角色到工厂
 {
 	static bool bInitializedFactory = false;
@@ -61,6 +64,8 @@ public:
 	}
 }; 
 void factoryTestFactory() {
+	std::cout << "factoryTestFactory" << std::endl;
+
 	InitializeRoleFactory(); // 优先初始化所有角色到工厂
 
 	JudgeRoleFactory judgeRole;
@@ -78,6 +83,8 @@ public:
 	}
 };
 void factoryTestFactorySharedPtr() {
+	std::cout << "factoryTestFactorySharedPtr" << std::endl;
+
 	InitializeRoleFactory(); // 优先初始化所有角色到工厂
 
 	JudgeRoleFactorySharedPtr judgeRole;
@@ -85,5 +92,47 @@ void factoryTestFactorySharedPtr() {
 	std::cout << judgeRole.Judge("ROLE_ROOT_ADMIN") << std::endl;
 	std::cout << judgeRole.Judge("ROLE_ORDER_ADMIN") << std::endl;
 	std::cout << judgeRole.Judge("ROLE_NORMAL") << std::endl;
+}
+//////////////////////////////////
+
+
+//////////////////////////////////
+//策略模式测试
+//////////////////////////////////
+class JudgeRoleContext {
+public:
+	std::string Judge(RoleOperation *pOperation) {
+		RoleContext roleContext(pOperation);
+		return roleContext.execute();
+	}
+};
+void facotryTestContext() {
+	std::cout << "facotryTestContext" << std::endl;
+
+	JudgeRoleContext judgeRole;
+
+	std::cout << judgeRole.Judge(new RootAdminRole("ROLE_ROOT_ADMIN")) << std::endl;
+	std::cout << judgeRole.Judge(new OrderAdminRole("ROLE_ORDER_ADMIN")) << std::endl;
+	std::cout << judgeRole.Judge(new NormalRole("ROLE_NORMAL")) << std::endl;
+}
+//////////////////////////////////
+
+//////////////////////////////////
+//万能策略模式测试
+class JudgeRoleContextTemplate {
+public:
+	std::string Judge(RoleOperation *pOperation) {
+		ProductContextTemplate<RoleOperation> roleContext(pOperation);
+		return roleContext.execute();
+	}
+};
+void factoryTestContextTemplate() {
+	std::cout << "factoryTestContextTemplate" << std::endl;
+
+	JudgeRoleContextTemplate judgeRole;
+
+	std::cout << judgeRole.Judge(new RootAdminRole("ROLE_ROOT_ADMIN")) << std::endl;
+	std::cout << judgeRole.Judge(new OrderAdminRole("ROLE_ORDER_ADMIN")) << std::endl;
+	std::cout << judgeRole.Judge(new NormalRole("ROLE_NORMAL")) << std::endl;
 }
 //////////////////////////////////
